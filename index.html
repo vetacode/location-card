@@ -376,7 +376,24 @@
 
           document.getElementById('temp').innerText =
             current.temperature + '°C';
-          document.getElementById('weatherText').innerText = 'Cuaca';
+
+          //STATIC
+          // document.getElementById('weatherText').innerText = 'Cuaca';
+
+          //DYNAMICS
+          function getWeatherText(code) {
+            if (code === 0) return 'Cerah';
+            if (code <= 3) return 'Berawan';
+            if (code <= 48) return 'Mendung';
+            if (code <= 67) return 'Hujan';
+            if (code <= 99) return 'Badai';
+            return 'Tidak diketahui';
+          }
+
+          document.getElementById('weatherText').innerText = getWeatherText(
+            current.weathercode,
+          );
+
           document.getElementById('date').innerText = formatDate(new Date());
 
           const forecast = document.getElementById('forecast');
