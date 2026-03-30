@@ -361,28 +361,41 @@
       }
 
       (async () => {
-        const loc = await getLocation();
-        document.getElementById('city').innerText = loc.city;
+        try {
+          const loc = await getLocation();
+          document.getElementById('city').innerText = loc.city;
 
-        const data = await getWeather(loc.latitude, loc.longitude);
-        const current = data.current_weather;
+          const data = await getWeather(loc.latitude, loc.longitude);
 
-        document.getElementById('temp').innerText = current.temperature + '°C';
-        document.getElementById('weatherText').innerText = 'Cuaca';
-        document.getElementById('date').innerText = formatDate(new Date());
-
-        const forecast = document.getElementById('forecast');
-        data.daily.time.slice(1, 4).forEach((d, i) => {
-          const el = document.createElement('div');
-          el.innerHTML = `<span>${formatDate(d)}</span><span>${data.daily.temperature_2m_max[i + 1]}°C</span>`;
-          forecast.appendChild(el);
-
-          if (i < 2) {
-            const sep = document.createElement('div');
-            sep.className = 'separator';
-            forecast.appendChild(sep);
+          if (!data.current_weather) {
+            console.error('API ERROR:', data);
+            return;
           }
-        });
+
+          const current = data.current_weather;
+
+          document.getElementById('temp').innerText =
+            current.temperature + '°C';
+          document.getElementById('weatherText').innerText = 'Cuaca';
+          document.getElementById('date').innerText = formatDate(new Date());
+
+          const forecast = document.getElementById('forecast');
+          forecast.innerHTML = '';
+
+          data.daily.time.slice(1, 4).forEach((d, i) => {
+            const el = document.createElement('div');
+            el.innerHTML = `<span>${formatDate(d)}</span><span>${data.daily.temperature_2m_max[i + 1]}°C</span>`;
+            forecast.appendChild(el);
+
+            if (i < 2) {
+              const sep = document.createElement('div');
+              sep.className = 'separator';
+              forecast.appendChild(sep);
+            }
+          });
+        } catch (err) {
+          console.error('ERROR:', err);
+        }
       })();
     </script>
   </body>
